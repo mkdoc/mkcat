@@ -3,6 +3,7 @@ var through = require('through3')
   , fs = require('fs');
 
 function read(chunk, encoding, cb) {
+  //console.log('read %s', chunk);
   return fs.readFile(chunk, function(err, buf) {
     cb(err, buf);
   })
@@ -48,28 +49,38 @@ function cat(opts, cb) {
     , output = new cat.Concat()
     , buf = new cat.Buffer();
 
-  function done(err) {
+  function done(err, res) {
     if(!called) {
-      return cb(err); 
+      return cb(err, res); 
     } 
     called = true;
   }
 
-  if(input) {
-    input.once('error', done);
-  }
-
   output.pipe(buf);
 
-  if(files) {
+  output.once('error', done);
+  buf.once('error', done);
+
+  buf.once('finish', function() {
+    //console.dir(this);
+    done(null, this.buffer); 
+  });
+
+  if(input) {
+    input.once('error', done);
+    input.on('readable', function(size) {
+      var data = input.read(size);
+      if(data === null) {
+        output.end(files); 
+      }else{
+        output.write(data); 
+      }
+    })
+  }else{
     output.end(files); 
   }
 
-  buf.once('finish', function() {
-    cb(null, buf.buffer); 
-  });
-
-  return output;
+  return buf;
 }
 
 function BufferedReader() {
