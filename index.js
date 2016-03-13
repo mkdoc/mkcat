@@ -103,11 +103,12 @@ function cat(opts, cb) {
       var data = input.read(size);
       if(data === null) {
 
+        // emit an event so cli can responsd
+        buf.emit('stdin', bytes, files);
+
         // now concat files
         output.end(files); 
 
-        // emit an event so cli can responsd
-        buf.emit('stdin', bytes, files);
       }else{
         bytes += data.length;
         output.write(data); 
