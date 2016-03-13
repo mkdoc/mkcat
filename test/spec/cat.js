@@ -55,13 +55,9 @@ describe('mkcat:', function() {
         input: false
         //output: process.stdout
       },
-      function(err, buf) {
+      function(err) {
         expect(err).to.eql(null);
-        var serializer = buf;
-        function onSerialize(err) {
-          done(err); 
-        }
-        serializer.on('finish', onSerialize);
+        done();
       });
   });
 

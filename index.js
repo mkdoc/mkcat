@@ -55,13 +55,23 @@ var ConcatStream = through.transform(concat)
 /**
  *  Concatenate stdin with files.
  *
+ *  Callback takes the form `function(err, result)` where the type of result 
+ *  will change depending upon the options given.
+ *
+ *  When none of the `buffer`, `stringify` and `ast` options are given the 
+ *  the callback is invoked with no result when the serialize stream finishes.
+ *
  *  @function cat
  *  @param {Object} opts processing options.
  *  @param {Function} cb callback function.
  *
- *  @option {Array} [files] list of files to concatenate.
- *  @option {Readable=process.stdin} [input] input stream.
- *  @option {Writable} [output] output stream.
+ *  @option {Array} files list of files to concatenate.
+ *  @option {Readable=process.stdin} input input stream.
+ *  @option {Writable} output output stream.
+ *  @option {String=utf8} encoding character encoding.
+ *  @option {Boolean=false} buffer callback with `Buffer`.
+ *  @option {Boolean=false} stringify callback with a `string`.
+ *  @option {Boolean=false} ast callback with the parsed AST.
  *
  *  @returns a buffered reader stream.
  */
@@ -76,7 +86,7 @@ function cat(opts, cb) {
 
   function done(err, res) {
     if(!called) {
-      return cb(err, res); 
+      return cb(err || null, res); 
     } 
     called = true;
   }
@@ -117,7 +127,8 @@ function cat(opts, cb) {
       stream.pipe(opts.output); 
     }
 
-    done(null, stream);
+    stream.once('error', done);
+    stream.once('finish', done);
   });
 
   // read from input stream, eg: stdin

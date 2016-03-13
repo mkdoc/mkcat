@@ -34,6 +34,12 @@ cat(opts, cb)
 
 Concatenate stdin with files.
 
+Callback takes the form `function(err, result)` where the type of result
+will change depending upon the options given.
+
+When none of the `buffer`, `stringify` and `ast` options are given the
+the callback is invoked with no result when the serialize stream finishes.
+
 Returns a buffered reader stream.
 
 * `opts` Object processing options.
@@ -44,6 +50,10 @@ Returns a buffered reader stream.
 * `files` Array list of files to concatenate.
 * `input` Readable=process.stdin input stream.
 * `output` Writable output stream.
+* `encoding` String=utf8 character encoding.
+* `buffer` Boolean=false callback with `Buffer`.
+* `stringify` Boolean=false callback with a `string`.
+* `ast` Boolean=false callback with the parsed AST.
 
 ### BufferedReader
 
