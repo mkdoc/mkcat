@@ -1,5 +1,5 @@
 var expect = require('chai').expect
-  , mkcat = require('../../lib/cat')
+  , mkcat = require('../../index');
 
 describe('mkcat:', function() {
 
