@@ -1,6 +1,6 @@
 {
   "name": "mkcat",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Concatenate markdown to commonmark AST",
   "author": "muji",
   "license": "MIT",
