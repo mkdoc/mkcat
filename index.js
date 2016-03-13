@@ -1,9 +1,8 @@
-//var commonmark = require('commonmark')
-var through = require('through3')
+var commonmark = require('commonmark')
+  , through = require('through3')
   , fs = require('fs');
 
 function read(chunk, encoding, cb) {
-  //console.log('read %s', chunk);
   return fs.readFile(chunk, function(err, buf) {
     cb(err, buf);
   })
@@ -62,8 +61,37 @@ function cat(opts, cb) {
   buf.once('error', done);
 
   buf.once('finish', function() {
-    //console.dir(this);
-    done(null, this.buffer); 
+    var res = this.buffer;
+
+    // consumer wants the buffer
+    if(opts.buffer) {
+      return done(null, res); 
+    }
+
+    var str = res.toString(opts.encoding);
+
+    // consumer wants the string
+    if(opts.stringify) {
+      return done(null, str); 
+    }
+
+    var parser = new commonmark.Parser()
+      , ast = parser.parse(str);
+
+    // consumer wants the ast
+    if(opts.ast) {
+      return done(null, ast); 
+    }
+
+    // serialize to a json stream
+    var serializer = require('mkast').serialize
+      , stream = serializer(ast);
+
+    if(opts.output) {
+      stream.pipe(opts.output); 
+    }
+
+    done(null, stream);
   });
 
   if(input) {
@@ -87,7 +115,7 @@ function BufferedReader() {
   this.buffer = new Buffer(0);
 }
 
-function readChunk(chunk, encoding, cb) {
+function cork(chunk, encoding, cb) {
   this.buffer = Buffer.concat(
     [this.buffer, chunk], this.buffer.length + chunk.length);
   cb();
@@ -99,6 +127,6 @@ function flush(cb) {
 }
 
 cat.Concat = through.transform(concat);
-cat.Buffer = through.transform(readChunk, flush, {ctor: BufferedReader});
+cat.Buffer = through.transform(cork, flush, {ctor: BufferedReader});
 
 module.exports = cat;
