@@ -13,6 +13,10 @@ Table of Contents
 mkcat
 =====
 
+[<img src="https://travis-ci.org/mkdoc/mkcat.svg?v=3" alt="Build Status">](https://travis-ci.org/mkdoc/mkcat)
+[<img src="http://img.shields.io/npm/v/mkcat.svg?v=3" alt="npm version">](https://npmjs.org/package/mkcat)
+[<img src="https://coveralls.io/repos/mkdoc/mkcat/badge.svg?branch=master&service=github&v=3" alt="Coverage Status">](https://coveralls.io/github/mkdoc/mkcat?branch=master).
+
 Concatenate markdown to commonmark AST.
 
 ## Install
