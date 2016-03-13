@@ -13,7 +13,7 @@ Table of Contents
 mkcat
 =====
 
-Swiss army knife for [commonmark](http://commonmark.org).
+Concatenate markdown to commonmark AST.
 
 ## Install
 

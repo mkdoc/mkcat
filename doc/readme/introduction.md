@@ -1,1 +1,1 @@
-Swiss army knife for [commonmark][].
+Concatenate markdown to commonmark AST.
