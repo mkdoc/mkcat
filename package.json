@@ -16,6 +16,7 @@
   ],
   "dependencies": {
     "commonmark": "~0.24.0",
+    "mkast": "~1.0.0",
     "through3": "~1.1.5"
   },
   "devDependencies": {
