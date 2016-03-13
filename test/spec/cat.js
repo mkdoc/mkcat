@@ -12,7 +12,7 @@ describe('mkcat:', function() {
       },
       function(err, buf) {
         expect(err).to.eql(null);
-        expect(buf).to.be.an('object');
+        expect(buf).to.be.instanceof(Buffer);
         expect('' + buf).to.eql(expected);
         done(err); 
       });
