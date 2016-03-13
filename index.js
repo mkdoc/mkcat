@@ -94,16 +94,26 @@ function cat(opts, cb) {
     done(null, stream);
   });
 
+  // read from input stream, eg: stdin
   if(input) {
+    var bytes = 0;
+
     input.once('error', done);
     input.on('readable', function(size) {
       var data = input.read(size);
       if(data === null) {
+
+        // now concat files
         output.end(files); 
+
+        // emit an event so cli can responsd
+        buf.emit('stdin', bytes, files);
       }else{
+        bytes += data.length;
         output.write(data); 
       }
     })
+
   }else{
     output.end(files); 
   }
