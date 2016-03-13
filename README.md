@@ -11,7 +11,7 @@ Table of Contents
     * [Readme](#readme)
 
 mkcat
-===
+=====
 
 Swiss army knife for [commonmark](http://commonmark.org).
 
