@@ -52,8 +52,11 @@
         ]
       },
       {
+        "bin": "mkapi index.js --level=2 --title=API"
+      },
+      {
         "inc": [
-          "developer.md"
+          "license.md"
         ]
       }
     ]
