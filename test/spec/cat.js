@@ -43,7 +43,7 @@ describe('mkcat:', function() {
       function(err, buf) {
         expect(err).to.eql(null);
         expect(buf).to.be.an('object');
-        expect(buf.type).to.eql('Document');
+        expect(buf.type).to.eql('document');
         done(err); 
       });
   });
