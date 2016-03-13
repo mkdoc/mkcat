@@ -16,7 +16,7 @@ mkcat
 [<img src="http://img.shields.io/npm/v/mkcat.svg?v=3" alt="npm version">](https://npmjs.org/package/mkcat)
 [<img src="https://coveralls.io/repos/mkdoc/mkcat/badge.svg?branch=master&service=github&v=3" alt="Coverage Status">](https://coveralls.io/github/mkdoc/mkcat?branch=master).
 
-Concatenate `stdin` and documents passed as `files`, buffer into a single markdown document, parse using [commonmark](http://commonmark.org), convert the parsed AST to JSON and print to `stdout`.
+Concatenate `stdin` and documents passed as `files`, buffer into a single markdown document, parse using [commonmark](http://commonmark.org), convert the parsed AST to newline-delimited JSON.
 
 ## Install
 
