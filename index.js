@@ -143,7 +143,6 @@ function cat(opts, cb) {
 
       // consumer wants the ast
       if(opts.ast) {
-        console.dir('RETURN AS AST');
         return done(null, parser.parse(str)); 
       }
     }
