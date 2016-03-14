@@ -1,5 +1,7 @@
-var commonmark = require('commonmark')
-  , through = require('through3')
+var through = require('through3')
+  , Serialize = require('mkast/lib/serialize')
+  , Walk = require('mkast/lib/walk')
+  , Parser = require('mkast').Parser
   , fs = require('fs');
 
 /**
@@ -13,6 +15,11 @@ function read(chunk, encoding, cb) {
   })
 }
 
+function Concat(opts) {
+  opts = opts || {};
+  this.buffer = opts.buffer || opts.stringify || opts.ast;
+}
+
 /**
  *  Pass through buffers and iterate arrays into files.
  *
@@ -20,7 +27,9 @@ function read(chunk, encoding, cb) {
  */
 function concat(chunk, encoding, cb) {
   var scope = this
-    , files;
+    , files
+    , parser = new Parser()
+    , buffer = this.buffer;
 
   function next() {
     var file = files.shift(); 
@@ -32,7 +41,17 @@ function concat(chunk, encoding, cb) {
       if(err) {
         return cb(err); 
       }
-      scope.push(buf); 
+
+      // just wants buffer data
+      if(buffer) {
+        scope.push(buf);
+        return next();
+      }
+
+      var ast = parser.parse('' + buf);
+      ast._file = file;
+      scope.push(ast);
+      scope.push({_type: 'eof', _file: file});
       next();
     })
   }
@@ -49,7 +68,7 @@ function concat(chunk, encoding, cb) {
   cb();
 }
 
-var ConcatStream = through.transform(concat)
+var ConcatStream = through.transform(concat, {ctor: Concat})
   , BufferedStream = through.transform(cork, flush, {ctor: BufferedReader});
 
 /**
@@ -81,8 +100,10 @@ function cat(opts, cb) {
   var input = opts.input !== undefined ? opts.input : process.stdin
     , files = opts.files || []
     , called = false
-    , output = new ConcatStream()
-    , buf = new BufferedStream();
+    , parser = new Parser()
+    , output = new ConcatStream(opts)
+    , isBuffered = opts.buffer || opts.stringify || opts.ast
+    , buf = isBuffered ? new BufferedStream() : new Serialize();
 
   function done(err, res) {
     if(!called) {
@@ -91,64 +112,75 @@ function cat(opts, cb) {
     called = true;
   }
 
-  output.pipe(buf);
+  if(isBuffered) {
+    output.pipe(buf);
+  }else{
+    output.pipe(new Walk()).pipe(buf);
+  }
+
+  if(opts.output) {
+    buf.pipe(opts.output); 
+  }
 
   output.once('error', done);
   buf.once('error', done);
 
   buf.once('finish', function() {
-    var res = this.buffer;
+    var res = this.buffer
+      , str;
 
-    // consumer wants the buffer
-    if(opts.buffer) {
-      return done(null, res); 
+    if(isBuffered) {
+      // consumer wants the buffer
+      if(opts.buffer) {
+        return done(null, res); 
+      }
+      
+      str = res.toString(opts.encoding);
+      // consumer wants the string
+      if(opts.stringify) {
+        return done(null, str); 
+      }
+
+      // consumer wants the ast
+      if(opts.ast) {
+        console.dir('RETURN AS AST');
+        return done(null, parser.parse(str)); 
+      }
     }
 
-    var str = res.toString(opts.encoding);
-
-    // consumer wants the string
-    if(opts.stringify) {
-      return done(null, str); 
-    }
-
-    var parser = new commonmark.Parser()
-      , ast = parser.parse(str);
-
-    // consumer wants the ast
-    if(opts.ast) {
-      return done(null, ast); 
-    }
-
-    // serialize to a json stream
-    var serializer = require('mkast').serialize
-      , stream = serializer(ast);
-
-    if(opts.output) {
-      stream.pipe(opts.output); 
-    }
-
-    stream.once('error', done);
-    stream.once('finish', done);
+    done();
   });
 
   // read from input stream, eg: stdin
   if(input) {
-    var bytes = 0;
+    var bytes = 0
+      , stdinput = new Buffer(0);
 
     input.once('error', done);
     input.on('readable', function(size) {
       var data = input.read(size);
       if(data === null) {
 
-        // emit an event so cli can responsd
+        if(!isBuffered && stdinput.length) {
+          var ast = parser.parse('' + stdinput);
+          ast._stdin = true;
+          buf.write(ast);
+          buf.write({_type: 'eof', _stdin: true});
+        }
+
+        // emit an event so cli can respond
         buf.emit('stdin', bytes, files);
 
         // now concat files
         output.end(files); 
-
       }else{
         bytes += data.length;
-        output.write(data); 
+        if(isBuffered) {
+          output.write(data); 
+        }else{
+          stdinput = Buffer.concat(
+            [stdinput, data], stdinput.length + data.length);
+        }
       }
     })
 
