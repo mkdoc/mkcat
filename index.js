@@ -189,5 +189,4 @@ function flush(cb) {
   cb();
 }
 
-
 module.exports = cat;
