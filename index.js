@@ -85,7 +85,7 @@ var ConcatStream = through.transform(concat, {ctor: Concat})
  *  @param {Function} [cb] callback function.
  *
  *  @option {Array} files list of files to concatenate.
- *  @option {Readable=process.stdin} input input stream.
+ *  @option {Readable} [input] input stream to read before files.
  *  @option {Writable} output output stream.
  *  @option {String=utf8} encoding character encoding.
  *  @option {Boolean=false} buffer callback with `Buffer`.
@@ -97,7 +97,7 @@ var ConcatStream = through.transform(concat, {ctor: Concat})
 function cat(opts, cb) {
   opts = opts || {};
 
-  var input = opts.input !== undefined ? opts.input : process.stdin
+  var input = opts.input
     , files = opts.files || []
     , called = false
     , parser = new Parser()
@@ -187,7 +187,7 @@ function cat(opts, cb) {
     output.end(files); 
   }
 
-  return buf;
+  return !opts.input && !opts.output ? output : buf;
 }
 
 /**
