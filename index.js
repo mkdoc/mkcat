@@ -1,4 +1,5 @@
 var through = require('through3')
+  , PassThrough = through.passthrough()
   , Serialize = require('mkast/lib/serialize')
   , Walk = require('mkast/lib/walk')
   , Parser = require('mkast').Parser
@@ -91,6 +92,7 @@ var ConcatStream = through.transform(concat, {ctor: Concat})
  *  @option {Boolean=false} buffer callback with `Buffer`.
  *  @option {Boolean=false} stringify callback with a `string`.
  *  @option {Boolean=false} ast callback with the parsed AST.
+ *  @option {Boolean=false} serialize pipe to a serialize stream.
  *
  *  @returns a buffered reader stream.
  */
@@ -103,13 +105,17 @@ function cat(opts, cb) {
     , parser = new Parser()
     , output = new ConcatStream(opts)
     , isBuffered = opts.buffer || opts.stringify || opts.ast
-    , buf = isBuffered ? new BufferedStream() : new Serialize();
+    , buf = isBuffered ? new BufferedStream() : new PassThrough();
 
   function done(err, res) {
     if(!called && typeof cb === 'function') {
       return cb(err || null, res); 
     } 
     called = true;
+  }
+
+  if(opts.serialize) {
+    buf = new Serialize(); 
   }
 
   if(isBuffered) {
@@ -150,6 +156,12 @@ function cat(opts, cb) {
     done();
   });
 
+  if(!isBuffered) {
+    output.on('data', function(chunk) {
+      buf.write(chunk);
+    }) 
+  }
+
   // read from input stream, eg: stdin
   if(input) {
     var bytes = 0
@@ -187,7 +199,7 @@ function cat(opts, cb) {
     output.end(files); 
   }
 
-  return !opts.input && !opts.output ? output : buf;
+  return buf;
 }
 
 /**

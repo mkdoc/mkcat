@@ -1,7 +1,7 @@
 {
   "name": "mkcat",
   "version": "1.0.3",
-  "description": "Concatenate markdown to commonmark AST",
+  "description": "Concatenate source files to an abstract syntax tree",
   "author": "muji",
   "license": "MIT",
   "repository": {
