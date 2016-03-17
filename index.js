@@ -82,7 +82,7 @@ var ConcatStream = through.transform(concat, {ctor: Concat})
  *
  *  @function cat
  *  @param {Object} opts processing options.
- *  @param {Function} cb callback function.
+ *  @param {Function} [cb] callback function.
  *
  *  @option {Array} files list of files to concatenate.
  *  @option {Readable=process.stdin} input input stream.
@@ -106,7 +106,7 @@ function cat(opts, cb) {
     , buf = isBuffered ? new BufferedStream() : new Serialize();
 
   function done(err, res) {
-    if(!called) {
+    if(!called && typeof cb === 'function') {
       return cb(err || null, res); 
     } 
     called = true;
