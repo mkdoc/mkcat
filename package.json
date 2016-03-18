@@ -1,6 +1,6 @@
 {
   "name": "mkcat",
-  "version": "1.0.4",
+  "version": "1.0.3",
   "description": "Concatenate source files to an abstract syntax tree",
   "author": "muji",
   "license": "MIT",
@@ -15,7 +15,10 @@
     "markdown",
     "commonmark",
     "ast",
-    "transform"
+    "transform",
+    "file",
+    "read",
+    "stdin"
   ],
   "dependencies": {
     "commonmark": "tmpfs/commonmark.js",
