@@ -21,7 +21,6 @@
     "stdin"
   ],
   "dependencies": {
-    "commonmark": "tmpfs/commonmark.js",
     "mkast": "~1.1.1",
     "through3": "~1.1.5"
   },
