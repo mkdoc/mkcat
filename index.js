@@ -66,7 +66,7 @@ function concat(chunk, encoding, cb) {
     files = chunk.slice();
     return next();
   }
-  cb();
+  //cb();
 }
 
 var ConcatStream = through.transform(concat, {ctor: Concat})
@@ -156,11 +156,11 @@ function cat(opts, cb) {
     done();
   });
 
-  if(!isBuffered) {
-    output.on('data', function(chunk) {
-      buf.write(chunk);
-    }) 
-  }
+  //if(!isBuffered) {
+    //output.on('data', function(chunk) {
+      //buf.write(chunk);
+    //}) 
+  //}
 
   // read from input stream, eg: stdin
   if(input) {
