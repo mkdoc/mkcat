@@ -18,7 +18,7 @@ function read(chunk, encoding, cb) {
 
 function Concat(opts) {
   opts = opts || {};
-  this.buffer = opts.buffer || opts.stringify || opts.ast;
+  this.isBuffered = opts.isBuffered;
 }
 
 /**
@@ -30,7 +30,7 @@ function concat(chunk, encoding, cb) {
   var scope = this
     , files
     , parser = new Parser()
-    , buffer = this.buffer;
+    , buffer = this.isBuffered;
 
   function next() {
     var file = files.shift(); 
@@ -52,7 +52,7 @@ function concat(chunk, encoding, cb) {
       var ast = parser.parse('' + buf);
       ast._file = file;
       scope.push(ast);
-      scope.push({_type: 'eof', _file: file});
+      //scope.push({_type: 'eof', _file: file});
       next();
     })
   }
@@ -102,10 +102,14 @@ function cat(opts, cb) {
   var input = opts.input
     , files = opts.files || []
     , called = false
+    , output
     , parser = new Parser()
-    , output = new ConcatStream(opts)
     , isBuffered = opts.buffer || opts.stringify || opts.ast
     , buf = isBuffered ? new BufferedStream() : new PassThrough();
+
+
+  opts.isBuffered = isBuffered;
+  output = new ConcatStream(opts)
 
   function done(err, res) {
     if(!called && typeof cb === 'function') {
@@ -155,12 +159,6 @@ function cat(opts, cb) {
 
     done();
   });
-
-  //if(!isBuffered) {
-    //output.on('data', function(chunk) {
-      //buf.write(chunk);
-    //}) 
-  //}
 
   // read from input stream, eg: stdin
   if(input) {
