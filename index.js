@@ -203,7 +203,7 @@ function cat(opts, cb) {
 /**
  *  Buffers a stream.
  *
- *  @public {constructor} BufferedReader
+ *  @private {constructor} BufferedReader
  */
 function BufferedReader() {
   this.buffer = new Buffer(0);

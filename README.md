@@ -82,14 +82,6 @@ Returns a buffered reader stream.
 * `ast` Boolean=false callback with the parsed AST.
 * `serialize` Boolean=false pipe to a serialize stream.
 
-### BufferedReader
-
-```javascript
-public BufferedReader()
-```
-
-Buffers a stream.
-
 ## License
 
 MIT
