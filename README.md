@@ -21,7 +21,7 @@ For the command line interface install [mkdoc][] globally (`npm i -g mkdoc`).
 Create the stream and write a [commonmark][] document:
 
 ```javascript
-var cat = require('.mkcat')
+var cat = require('mkcat')
   , ast = require('mkast');
 cat({files: ['README.md']})
   .pipe(ast.stringify({indent: 2}))

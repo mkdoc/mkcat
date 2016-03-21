@@ -12,7 +12,7 @@ Concatenate `stdin` and documents passed as `files`, buffer into a single markdo
 
 Create the stream and write a [commonmark][] document:
 
-<? @source {javascript=s/\.\/index/mkcat/gm} usage.js ?>
+<? @source {javascript=s/\.\.\/index/mkcat/gm} usage.js ?>
 
 <? @include {=readme} example.md help.md ?>
 
