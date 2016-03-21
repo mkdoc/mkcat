@@ -33,35 +33,8 @@
   "scripts": {
     "lint": "jshint . && jscs .",
     "clean": "rm -rf coverage",
-    "docs": "npm run readme",
-    "readme": "mdp --force -v",
     "test": "NODE_ENV=test mocha ${SPEC:-test/spec}",
     "cover": "NODE_ENV=test istanbul cover _mocha -- ${SPEC:-test/spec}",
     "coveralls": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
-  },
-  "mdp": {
-    "title": "mkcat",
-    "pedantic": true,
-    "include": "doc/readme",
-    "require": "lib",
-    "links": "links.md",
-    "toc": "Table of Contents",
-    "base": "https://github.com/mkdoc/mkcat",
-    "partial": [
-      {
-        "inc": [
-          "introduction.md",
-          "install.md"
-        ]
-      },
-      {
-        "bin": "mkapi index.js --level=2 --title=API"
-      },
-      {
-        "inc": [
-          "license.md"
-        ]
-      }
-    ]
   }
 }
