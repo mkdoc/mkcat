@@ -1,8 +1,9 @@
 var through = require('through3')
   , PassThrough = through.passthrough()
+  , ast = require('mkast')
+  , Node = ast.Node
   , Serialize = require('mkast/lib/serialize')
   , Walk = require('mkast/lib/walk')
-  , Parser = require('mkast').Parser
   , fs = require('fs');
 
 /**
@@ -29,7 +30,6 @@ function Concat(opts) {
 function concat(chunk, encoding, cb) {
   var scope = this
     , files
-    , parser = new Parser()
     , buffer = this.isBuffered;
 
   function next() {
@@ -49,10 +49,9 @@ function concat(chunk, encoding, cb) {
         return next();
       }
 
-      var ast = parser.parse('' + buf);
-      ast._file = file;
-      scope.push(ast);
-      //scope.push({_type: 'eof', _file: file});
+      var doc = ast.parse('' + buf);
+      doc.file = file;
+      scope.push(doc);
       next();
     })
   }
@@ -103,7 +102,6 @@ function cat(opts, cb) {
     , files = opts.files || []
     , called = false
     , output
-    , parser = new Parser()
     , isBuffered = opts.buffer || opts.stringify || opts.ast
     , buf = isBuffered ? new BufferedStream() : new PassThrough();
 
@@ -153,7 +151,7 @@ function cat(opts, cb) {
 
       // consumer wants the ast
       if(opts.ast) {
-        return done(null, parser.parse(str)); 
+        return done(null, ast.parse(str)); 
       }
     }
 
@@ -171,10 +169,10 @@ function cat(opts, cb) {
       if(data === null) {
 
         if(!isBuffered && stdinput.length) {
-          var ast = parser.parse('' + stdinput);
-          ast._stdin = true;
+          var ast = ast.parse('' + stdinput);
+          ast.stdin = true;
           buf.write(ast);
-          buf.write({_type: 'eof', _stdin: true});
+          buf.write(Node.createNode(Node.EOF, {stdin: true}));
         }
 
         // emit an event so cli can respond
