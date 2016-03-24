@@ -103,7 +103,8 @@ function cat(opts, cb) {
     , called = false
     , output
     , isBuffered = opts.buffer || opts.stringify || opts.ast
-    , buf = isBuffered ? new BufferedStream() : new PassThrough();
+    , buf = isBuffered ? new BufferedStream() : new PassThrough()
+    , walker = new Walk();
 
 
   opts.isBuffered = isBuffered;
@@ -123,7 +124,7 @@ function cat(opts, cb) {
   if(isBuffered) {
     output.pipe(buf);
   }else{
-    output.pipe(new Walk()).pipe(buf);
+    output.pipe(walker).pipe(buf);
   }
 
   if(opts.output) {
@@ -169,10 +170,10 @@ function cat(opts, cb) {
       if(data === null) {
 
         if(!isBuffered && stdinput.length) {
-          var ast = ast.parse('' + stdinput);
-          ast.stdin = true;
-          buf.write(ast);
-          buf.write(Node.createNode(Node.EOF, {stdin: true}));
+          var doc = ast.parse('' + stdinput);
+          doc.stdin = true;
+          walker.write(doc);
+          walker.write(Node.createNode(Node.EOF, {stdin: true}));
         }
 
         // emit an event so cli can respond
