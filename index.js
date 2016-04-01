@@ -183,7 +183,6 @@ function cat(opts, cb) {
           var doc = ast.parse('' + stdinput);
           doc.stdin = true;
           walker.write(doc);
-          walker.write(Node.createNode(Node.EOF, {stdin: true}));
 
           if(!files.length) {
             walker.end(); 
