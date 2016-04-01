@@ -1,7 +1,6 @@
 var through = require('through3')
   , PassThrough = through.passthrough()
   , ast = require('mkast')
-  , Node = ast.Node
   , Serialize = require('mkast/lib/serialize')
   , Walk = require('mkast/lib/walk')
   , fs = require('fs');
