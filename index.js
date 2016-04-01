@@ -116,7 +116,7 @@ function cat(opts, cb) {
         return cb(err || null, res); 
       }else{
         if(err) {
-          buf.emit('error', err) ;
+          return buf.emit('error', err) ;
         }
         buf.emit('finish', null, res);
       }
@@ -139,6 +139,10 @@ function cat(opts, cb) {
 
   output.once('error', done);
   buf.once('error', done);
+
+  if(opts.output && opts.output !== process.stdout) {
+    buf = opts.output;
+  }
 
   buf.once('finish', function() {
     var res = this.buffer
@@ -180,9 +184,14 @@ function cat(opts, cb) {
           doc.stdin = true;
           walker.write(doc);
           walker.write(Node.createNode(Node.EOF, {stdin: true}));
+
+          if(!files.length) {
+            walker.end(); 
+            return;
+          }
         }
 
-        // emit an event so cli can respond
+        // emit an event so cli can respond when no input data is available
         buf.emit('stdin', bytes, files);
 
         // now concat files
