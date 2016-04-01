@@ -106,15 +106,21 @@ function cat(opts, cb) {
     , buf = isBuffered ? new BufferedStream() : new PassThrough()
     , walker = new Walk();
 
-
   opts.isBuffered = isBuffered;
   output = new ConcatStream(opts)
 
   function done(err, res) {
-    if(!called && typeof cb === 'function') {
-      return cb(err || null, res); 
+    if(!called) {
+      called = true;
+      if(typeof cb === 'function') {
+        return cb(err || null, res); 
+      }else{
+        if(err) {
+          buf.emit('error', err) ;
+        }
+        buf.emit('finish', null, res);
+      }
     } 
-    called = true;
   }
 
   if(opts.serialize) {
@@ -180,7 +186,9 @@ function cat(opts, cb) {
         buf.emit('stdin', bytes, files);
 
         // now concat files
-        output.end(files); 
+        if(files.length) {
+          output.end(files); 
+        }
       }else{
         bytes += data.length;
         if(isBuffered) {
