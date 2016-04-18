@@ -30,24 +30,38 @@ cat({files: ['README.md']})
 
 ## Example
 
-Source files:
+Read files:
 
 ```shell
-mkcat API.md README.md | mkout
+mkcat README.md | mkout
+```
+
+Read `stdin`:
+
+```shell
+cat README.md | mkcat | mkout
+```
+
+However this is not recommended because file path information is lost which is important for some processing tools.
+
+Concatenate `stdin` with files:
+
+```shell
+cat README.md | mkcat API.md DEVELOPER.md | mkout
 ```
 
 ## Help
 
 ```
-mkcat [options] [files...]
+Usage: mkcat [options] [files...]
 
-Concatenate source files to an abstract syntax tree.
+  Reads markdown documents.
 
-  --no-ast    Disable AST output, prints input
-  -h, --help  Display this help and exit
-  --version   Print the version and exit
+Options
+  -h, --help              Display help and exit
+  --version               Print the version and exit
 
-Report bugs to https://github.com/mkdoc/mkcat/issues
+mkcat@1.1.5
 ```
 
 ## API
@@ -81,13 +95,14 @@ Returns a buffered reader stream.
 * `stringify` Boolean=false callback with a `string`.
 * `ast` Boolean=false callback with the parsed AST.
 * `serialize` Boolean=false pipe to a serialize stream.
+
 ## License
 
 MIT
 
 ---
 
-Created by [mkdoc](https://github.com/mkdoc/mkdoc).
+Created by [mkdoc](https://github.com/mkdoc/mkdoc) on April 18, 2016
 
 [mkdoc]: https://github.com/mkdoc/mkdoc
 [node]: http://nodejs.org
